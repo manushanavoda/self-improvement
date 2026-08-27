@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>180-Day Protocol | Firebase Cloud Tracker</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <!-- Firebase Modular SDKs -->
   <script type="module">
@@ -16,7 +15,7 @@
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // ⚠️ REPLACE THIS WITH YOUR FIREBASE PROJECT CONFIG
+    // ✅ YOUR ACTUAL FIREBASE PROJECT CONFIG
     const firebaseConfig = {
       apiKey: "AIzaSyC5mu2VsT483qfKCzYmWFDNhoPI4O_waK8",
       authDomain: "self-improvement-92ed0.firebaseapp.com",
@@ -134,12 +133,25 @@
     </div>
 
     <!-- Daily Checklist -->
-    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg">
-      <div class="flex items-center justify-between mb-3">
+    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg space-y-3">
+      <div class="flex items-center justify-between mb-1">
         <h2 class="text-sm font-bold text-gray-200">Today's Protocol Rules</h2>
-        <span id="completedCount" class="text-xs font-semibold px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20">0/6 Done</span>
+        <span id="completedCount" class="text-xs font-semibold px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20">0/7 Done</span>
       </div>
 
+      <!-- Water Intake Tracker Block -->
+      <div class="p-3.5 bg-gray-950 border border-gray-800 rounded-xl flex items-center justify-between">
+        <div>
+          <span class="text-sm font-semibold text-gray-200 block">Hydration Goal (3L) 💧</span>
+          <span id="waterTextDisplay" class="text-[11px] text-sky-400 font-bold">0 / 3000 ml</span>
+        </div>
+        <div class="flex items-center space-x-1.5">
+          <button id="btnAddWater" class="px-3 py-1.5 bg-sky-600/20 border border-sky-500/40 text-sky-400 hover:bg-sky-500 hover:text-black font-bold text-xs rounded-lg transition">+ 250ml</button>
+          <button id="btnResetWater" class="px-2 py-1.5 bg-gray-900 text-gray-500 hover:text-gray-300 font-bold text-xs rounded-lg transition">↺</button>
+        </div>
+      </div>
+
+      <!-- Checkbox Rules -->
       <form id="habitForm" class="space-y-2">
         <label id="lbl-wakeUp" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">Wake up at 6:00 AM ⏰</span>
@@ -177,14 +189,6 @@
         <div>SU</div><div>MO</div><div>TU</div><div>WE</div><div>TH</div><div>FR</div><div>SA</div>
       </div>
       <div id="calendarGrid" class="grid grid-cols-7 gap-1 text-center text-xs font-semibold"></div>
-    </div>
-
-    <!-- 7-Day Trend Chart -->
-    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg">
-      <h2 class="text-sm font-bold text-gray-200 mb-1">7-Day Consistency Trend</h2>
-      <div class="relative h-44 w-full">
-        <canvas id="consistencyChart"></canvas>
-      </div>
     </div>
 
   </div>
@@ -237,6 +241,7 @@
           appSection.classList.remove('hidden');
           document.getElementById('userDisplayName').textContent = user.displayName || user.email.split('@')[0];
           document.getElementById('userEmailDisplay').textContent = user.email;
+          document.getElementById('currentDateDisplay').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 
           // Listen to Cloud Firestore Data Real-time
           const userDocRef = doc(window.db, "users", user.uid);
@@ -247,7 +252,7 @@
               trackerData = {};
             }
             if (!trackerData[todayKey]) {
-              trackerData[todayKey] = { wakeUp: false, workout: false, noPorn: false, noSmoke: false, noAlcohol: false, deepWork: false };
+              trackerData[todayKey] = { wakeUp: false, workout: false, noPorn: false, noSmoke: false, noAlcohol: false, deepWork: false, water: 0 };
             }
             updateUI();
           });
@@ -318,19 +323,35 @@
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     checkboxes.forEach(cb => {
       cb.addEventListener('change', async (e) => {
-        if (!trackerData[todayKey]) trackerData[todayKey] = {};
+        if (!trackerData[todayKey]) trackerData[todayKey] = { water: 0 };
         trackerData[todayKey][e.target.value] = e.target.checked;
-        
-        // Sync to Firestore Cloud
-        if (currentUser) {
-          const { doc, setDoc } = window.firebaseAuthOps;
-          await setDoc(doc(window.db, "users", currentUser.uid), { habits: trackerData }, { merge: true });
-        }
+        saveDataToCloud();
       });
     });
 
+    // Water Tracker Buttons
+    document.getElementById('btnAddWater').addEventListener('click', () => {
+      if (!trackerData[todayKey]) trackerData[todayKey] = { water: 0 };
+      const currentWater = trackerData[todayKey].water || 0;
+      trackerData[todayKey].water = Math.min(3000, currentWater + 250);
+      saveDataToCloud();
+    });
+
+    document.getElementById('btnResetWater').addEventListener('click', () => {
+      if (!trackerData[todayKey]) trackerData[todayKey] = { water: 0 };
+      trackerData[todayKey].water = 0;
+      saveDataToCloud();
+    });
+
+    async function saveDataToCloud() {
+      if (currentUser) {
+        const { doc, setDoc } = window.firebaseAuthOps;
+        await setDoc(doc(window.db, "users", currentUser.uid), { habits: trackerData }, { merge: true });
+      }
+    }
+
     function updateUI() {
-      // Set Checkboxes State
+      // 1. Set Checkboxes State
       checkboxes.forEach(cb => {
         const isChecked = trackerData[todayKey] ? (trackerData[todayKey][cb.value] || false) : false;
         cb.checked = isChecked;
@@ -342,7 +363,44 @@
         }
       });
 
-      // Render Calendar & Progress
+      // 2. Set Water Progress
+      const waterMl = trackerData[todayKey] ? (trackerData[todayKey].water || 0) : 0;
+      document.getElementById('waterTextDisplay').textContent = `${waterMl} / 3000 ml`;
+
+      // 3. Calculate Today's Completion Score (6 Checkboxes + Water Goal = 7 items)
+      const currentDayData = trackerData[todayKey] || {};
+      let completedCount = Object.keys(currentDayData).filter(k => k !== 'water' && currentDayData[k]).length;
+      if (waterMl >= 3000) completedCount += 1;
+      
+      const totalItems = 7;
+      const todayPercentage = Math.round((completedCount / totalItems) * 100);
+
+      document.getElementById('completedCount').textContent = `${completedCount}/${totalItems} Done`;
+      document.getElementById('overallScore').textContent = `${todayPercentage}%`;
+
+      // 4. Calculate Streak Count (Days with 100% score)
+      let streak = 0;
+      let checkDate = new Date();
+      while (true) {
+        const dateStr = checkDate.toISOString().split('T')[0];
+        const dayLogs = trackerData[dateStr];
+        if (dayLogs) {
+          let dayDone = Object.keys(dayLogs).filter(k => k !== 'water' && dayLogs[k]).length;
+          if ((dayLogs.water || 0) >= 3000) dayDone += 1;
+          
+          if (dayDone === totalItems) {
+            streak++;
+            checkDate.setDate(checkDate.getDate() - 1);
+          } else {
+            break;
+          }
+        } else {
+          break;
+        }
+      }
+      document.getElementById('streakCount').textContent = `${streak} 🔥`;
+
+      // 5. Render Calendar View
       renderCalendar();
     }
 
@@ -371,8 +429,9 @@
         const dayData = trackerData[dateStr];
         let score = 0;
         if (dayData) {
-          const completed = Object.keys(dayData).filter(k => dayData[k]).length;
-          score = (completed / 6) * 100;
+          let completed = Object.keys(dayData).filter(k => k !== 'water' && dayData[k]).length;
+          if ((dayData.water || 0) >= 3000) completed += 1;
+          score = (completed / 7) * 100;
         }
 
         if (score === 100) cell.classList.add('bg-emerald-500/20', 'border-emerald-500/50', 'text-emerald-300');
