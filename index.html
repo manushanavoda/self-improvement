@@ -6,6 +6,7 @@
   <title>180-Day Protocol | Firebase Cloud Tracker</title>
   <script src="https://cdn.tailwindcss.com"></script>
 
+  <!-- Firebase Modular SDKs -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
@@ -45,19 +46,23 @@
 </head>
 <body class="bg-black text-gray-100 min-h-screen pb-16 font-sans antialiased selection:bg-emerald-500 selection:text-white">
 
+  <!-- AUTH SECTION -->
   <div id="authSection" class="max-w-md mx-auto px-4 pt-12 space-y-6">
     <div class="text-center space-y-2">
       <h1 class="text-2xl font-black text-emerald-400 tracking-wider">180-DAY PROTOCOL</h1>
       <p class="text-xs text-gray-400">Cloud Sync & Multi-Device Discipline Engine</p>
     </div>
 
+    <!-- Auth Card -->
     <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-xl space-y-4">
       
+      <!-- Tabs -->
       <div class="flex border-b border-gray-800 pb-2 text-sm font-bold">
         <button id="tabSignInBtn" class="flex-1 text-center py-1 text-emerald-400 border-b-2 border-emerald-400">Sign In</button>
         <button id="tabSignUpBtn" class="flex-1 text-center py-1 text-gray-500">Sign Up</button>
       </div>
 
+      <!-- Auth Form -->
       <form id="authForm" class="space-y-3">
         <div id="usernameContainer" class="hidden">
           <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1">Username</label>
@@ -77,6 +82,7 @@
         <button type="submit" id="authSubmitBtn" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 font-bold text-gray-950 rounded-xl transition text-sm">Sign In</button>
       </form>
 
+      <!-- Forgot Password & Google Sign-In -->
       <div class="space-y-3 pt-2">
         <button id="btnForgotPassword" class="text-xs text-gray-400 hover:text-emerald-400 text-center w-full">Forgot Password?</button>
         
@@ -95,8 +101,10 @@
     </div>
   </div>
 
+  <!-- MAIN APP DASHBOARD -->
   <div id="appSection" class="max-w-md mx-auto px-4 pt-6 space-y-4 hidden">
     
+    <!-- User Profile Header -->
     <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg flex items-center justify-between">
       <div>
         <span class="text-[10px] uppercase font-bold text-emerald-500 block">Logged In User</span>
@@ -106,6 +114,7 @@
       <button id="btnLogout" class="px-3 py-1.5 bg-gray-950 border border-gray-800 hover:bg-rose-950 hover:text-rose-400 hover:border-rose-900/50 rounded-xl text-xs font-bold transition">Logout</button>
     </div>
 
+    <!-- Protocol Stats Header -->
     <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg flex items-center justify-between">
       <div>
         <h1 class="text-base font-black tracking-wide text-emerald-400">180-DAY CHALLENGE</h1>
@@ -123,12 +132,14 @@
       </div>
     </div>
 
+    <!-- Daily Checklist -->
     <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg space-y-3">
       <div class="flex items-center justify-between mb-1">
         <h2 class="text-sm font-bold text-gray-200">Today's Protocol Rules</h2>
-        <span id="completedCount" class="text-xs font-semibold px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20">0/12 Done</span>
+        <span id="completedCount" class="text-xs font-semibold px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20">0/11 Done</span>
       </div>
 
+      <!-- Water Intake Tracker Block (Hydration) -->
       <div class="p-3.5 bg-gray-950 border border-gray-800 rounded-xl flex items-center justify-between">
         <div>
           <span class="text-sm font-semibold text-gray-200 block">Hydration Goal (3L) 💧</span>
@@ -140,47 +151,63 @@
         </div>
       </div>
 
+      <!-- Checkbox Rules (Ordered Daily Routine) -->
       <form id="habitForm" class="space-y-2">
+        <!-- 1. Wake Up -->
         <label id="lbl-wakeUp" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">Wake up at 6:00 AM ⏰</span>
           <input type="checkbox" value="wakeUp" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
         </label>
+
+        <!-- 2. Daily Workout -->
         <label id="lbl-workout" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">Daily Workout / Gym 🏋️‍♂️</span>
           <input type="checkbox" value="workout" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
         </label>
-        <label id="lbl-reading" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
-          <span class="text-sm font-semibold text-gray-200">Reading / Learning 📖</span>
-          <input type="checkbox" value="reading" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
-        </label>
-        <label id="lbl-dayPlanning" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
-          <span class="text-sm font-semibold text-gray-200">Day Planning 📋</span>
-          <input type="checkbox" value="dayPlanning" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
-        </label>
-        <label id="lbl-budget" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
-          <span class="text-sm font-semibold text-gray-200">Budget & Expense Tracking 💰</span>
-          <input type="checkbox" value="budget" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
-        </label>
-        <label id="lbl-deepWork" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
-          <span class="text-sm font-semibold text-gray-200">Deep Work / Project Work 🎯</span>
-          <input type="checkbox" value="deepWork" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
-        </label>
+
+        <!-- 3. Cold Shower -->
         <label id="lbl-coldShower" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">Cold Shower 🧊</span>
           <input type="checkbox" value="coldShower" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
         </label>
+
+        <!-- 4. Day Planning -->
+        <label id="lbl-dayPlanning" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
+          <span class="text-sm font-semibold text-gray-200">Day Planning 📋</span>
+          <input type="checkbox" value="dayPlanning" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
+        </label>
+
+        <!-- 5. Deep Work -->
+        <label id="lbl-deepWork" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
+          <span class="text-sm font-semibold text-gray-200">Deep Work / Skill Building 📚</span>
+          <input type="checkbox" value="deepWork" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
+        </label>
+
+        <!-- 6. Reading -->
+        <label id="lbl-reading" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
+          <span class="text-sm font-semibold text-gray-200">Reading / Learning 📖</span>
+          <input type="checkbox" value="reading" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
+        </label>
+
+        <!-- 7. Social Media Detox -->
         <label id="lbl-detox" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">Social Media Detox 🍃</span>
           <input type="checkbox" value="detox" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
         </label>
+
+        <!-- 8. No Adult Content -->
         <label id="lbl-noPorn" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">No Adult Content / Retention 🚫</span>
           <input type="checkbox" value="noPorn" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
         </label>
+
+        <!-- 9. No Smoking -->
         <label id="lbl-noSmoke" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">No Smoking / Nicotine 🚭</span>
           <input type="checkbox" value="noSmoke" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
         </label>
+
+        <!-- 10. No Alcohol -->
         <label id="lbl-noAlcohol" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">No Alcohol 🍷</span>
           <input type="checkbox" value="noAlcohol" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
@@ -188,6 +215,7 @@
       </form>
     </div>
 
+    <!-- Monthly Calendar View -->
     <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg">
       <div class="flex items-center justify-between mb-3">
         <h2 id="calendarMonthYear" class="text-sm font-bold text-gray-200">Month Overview</h2>
@@ -200,6 +228,7 @@
 
   </div>
 
+  <!-- App Script Logic -->
   <script type="module">
     const authSection = document.getElementById('authSection');
     const appSection = document.getElementById('appSection');
@@ -214,7 +243,7 @@
     let currentUser = null;
     let trackerData = {};
     const todayKey = new Date().toISOString().split('T')[0];
-    const totalHabitItems = 12; // 11 Checkboxes + Water Goal
+    const totalHabitItems = 11; // 10 Checkboxes + 1 Water Goal
 
     // Auth State Toggle
     tabSignInBtn.addEventListener('click', () => {
