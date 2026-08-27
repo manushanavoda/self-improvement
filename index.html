@@ -15,7 +15,7 @@
 
   <div class="max-w-md mx-auto px-4 pt-6 space-y-4">
     
-    <!-- Mobile Header -->
+    <!-- Header -->
     <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg flex items-center justify-between">
       <div>
         <h1 class="text-lg font-black tracking-wide text-emerald-400">180-DAY PROTOCOL</h1>
@@ -36,7 +36,7 @@
     <!-- Daily Checklist -->
     <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg">
       <div class="flex items-center justify-between mb-3">
-        <h2 class="text-sm font-bold text-gray-200">Daily Non-Negotiables</h2>
+        <h2 class="text-sm font-bold text-gray-200">Today's Non-Negotiables</h2>
         <span id="completedCount" class="text-xs font-semibold px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20">0/6 Done</span>
       </div>
 
@@ -45,27 +45,22 @@
           <span class="text-sm font-semibold text-gray-200">Wake up at 6:00 AM ⏰</span>
           <input type="checkbox" value="wakeUp" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
         </label>
-
         <label id="lbl-workout" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">Daily Workout / Fitness 🏋️‍♂️</span>
           <input type="checkbox" value="workout" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
         </label>
-
         <label id="lbl-noPorn" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">No Adult Content / Retention 🚫</span>
           <input type="checkbox" value="noPorn" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
         </label>
-
         <label id="lbl-noSmoke" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">No Smoking / Nicotine 🚭</span>
           <input type="checkbox" value="noSmoke" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
         </label>
-
         <label id="lbl-noAlcohol" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">No Alcohol 📵</span>
           <input type="checkbox" value="noAlcohol" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
         </label>
-
         <label id="lbl-deepWork" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">Deep Work / Skill Building 📚</span>
           <input type="checkbox" value="deepWork" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
@@ -73,7 +68,28 @@
       </form>
     </div>
 
-    <!-- Water Intake Counter -->
+    <!-- Monthly Calendar View -->
+    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg">
+      <div class="flex items-center justify-between mb-3">
+        <h2 id="calendarMonthYear" class="text-sm font-bold text-gray-200">Month Overview</h2>
+        <div class="flex items-center space-x-1">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
+          <span class="text-[10px] text-gray-400 mr-2">100%</span>
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
+          <span class="text-[10px] text-gray-400">Partial</span>
+        </div>
+      </div>
+      
+      <!-- Days of Week Header -->
+      <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-gray-500 mb-2">
+        <div>SU</div><div>MO</div><div>TU</div><div>WE</div><div>TH</div><div>FR</div><div>SA</div>
+      </div>
+      
+      <!-- Calendar Dates Grid -->
+      <div id="calendarGrid" class="grid grid-cols-7 gap-1 text-center text-xs font-semibold"></div>
+    </div>
+
+    <!-- Hydration & Journal -->
     <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg flex items-center justify-between">
       <div>
         <h3 class="text-sm font-bold text-gray-200">Hydration Tracker 💧</h3>
@@ -86,13 +102,12 @@
       </div>
     </div>
 
-    <!-- Daily Mindset Journal -->
     <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg space-y-2">
       <h3 class="text-sm font-bold text-gray-200">Daily Journal / Reflection 📝</h3>
       <textarea id="journalInput" rows="2" placeholder="Write thoughts or main focus for today..." class="w-full bg-gray-950 border border-gray-800 rounded-xl p-2.5 text-xs text-gray-200 focus:outline-none focus:border-emerald-500/50 resize-none"></textarea>
     </div>
 
-    <!-- Mobile Trend Chart -->
+    <!-- 7-Day Trend Chart -->
     <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg">
       <h2 class="text-sm font-bold text-gray-200 mb-1">7-Day Consistency Trend</h2>
       <div class="relative h-44 w-full">
@@ -103,10 +118,11 @@
   </div>
 
   <script>
-    const todayKey = new Date().toISOString().split('T')[0];
-    document.getElementById('currentDateDisplay').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    const today = new Date();
+    const todayKey = today.toISOString().split('T')[0];
+    document.getElementById('currentDateDisplay').textContent = today.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 
-    let trackerData = JSON.parse(localStorage.getItem('transformationDataPro')) || {};
+    let trackerData = JSON.parse(localStorage.getItem('transformationDataCalendar')) || {};
     if (!trackerData[todayKey]) {
       trackerData[todayKey] = { wakeUp: false, workout: false, noPorn: false, noSmoke: false, noAlcohol: false, deepWork: false, water: 0, journal: "" };
     }
@@ -116,7 +132,7 @@
     const consistencyChart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: Object.keys(trackerData).slice(-7),
+        labels: [],
         datasets: [{
           label: 'Completion %',
           data: [],
@@ -142,7 +158,6 @@
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     const journalInput = document.getElementById('journalInput');
 
-    // Load initial habit state
     checkboxes.forEach(cb => {
       const isChecked = trackerData[todayKey][cb.value] || false;
       cb.checked = isChecked;
@@ -155,7 +170,6 @@
       });
     });
 
-    // Water counter handlers
     document.getElementById('btnPlusWater').addEventListener('click', () => {
       if ((trackerData[todayKey].water || 0) < 7) {
         trackerData[todayKey].water = (trackerData[todayKey].water || 0) + 1;
@@ -170,11 +184,10 @@
       }
     });
 
-    // Journal handler
     journalInput.value = trackerData[todayKey].journal || "";
     journalInput.addEventListener('input', (e) => {
       trackerData[todayKey].journal = e.target.value;
-      localStorage.setItem('transformationDataPro', JSON.stringify(trackerData));
+      localStorage.setItem('transformationDataCalendar', JSON.stringify(trackerData));
     });
 
     function updateLabelStyle(key, isChecked) {
@@ -185,6 +198,58 @@
       } else {
         parentLabel.classList.remove('border-emerald-500/40', 'bg-emerald-950/20');
         parentLabel.classList.add('border-gray-800', 'bg-gray-950');
+      }
+    }
+
+    function renderCalendar() {
+      const calendarGrid = document.getElementById('calendarGrid');
+      calendarGrid.innerHTML = '';
+
+      const year = today.getFullYear();
+      const month = today.getMonth();
+      
+      document.getElementById('calendarMonthYear').textContent = today.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      // Empty slots before 1st day of month
+      for (let i = 0; i < firstDay; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'py-2';
+        calendarGrid.appendChild(emptyCell);
+      }
+
+      // Render calendar days
+      for (let day = 1; day <= daysInMonth; day++) {
+        const monthFormatted = String(month + 1).padStart(2, '0');
+        const dayFormatted = String(day).padStart(2, '0');
+        const dateStr = `${year}-${monthFormatted}-${dayFormatted}`;
+
+        const cell = document.createElement('div');
+        cell.className = 'py-2 rounded-lg border text-center font-medium transition';
+
+        const dayData = trackerData[dateStr];
+        let score = 0;
+        if (dayData) {
+          const completed = Object.keys(dayData).filter(k => ['wakeUp','workout','noPorn','noSmoke','noAlcohol','deepWork'].includes(k) && dayData[k]).length;
+          score = (completed / 6) * 100;
+        }
+
+        if (dateStr === todayKey) {
+          cell.classList.add('ring-2', 'ring-emerald-400', 'font-bold');
+        }
+
+        if (score === 100) {
+          cell.classList.add('bg-emerald-500/20', 'border-emerald-500/50', 'text-emerald-300');
+        } else if (score > 0) {
+          cell.classList.add('bg-amber-500/20', 'border-amber-500/50', 'text-amber-300');
+        } else {
+          cell.classList.add('bg-gray-950', 'border-gray-800', 'text-gray-500');
+        }
+
+        cell.textContent = day;
+        calendarGrid.appendChild(cell);
       }
     }
 
@@ -205,7 +270,7 @@
     }
 
     function saveAndUpdate() {
-      localStorage.setItem('transformationDataPro', JSON.stringify(trackerData));
+      localStorage.setItem('transformationDataCalendar', JSON.stringify(trackerData));
       
       const dates = Object.keys(trackerData);
       let totalCompleted = 0;
@@ -230,6 +295,8 @@
         return Math.round((completed / 6) * 100);
       });
       consistencyChart.update();
+
+      renderCalendar();
     }
 
     saveAndUpdate();
