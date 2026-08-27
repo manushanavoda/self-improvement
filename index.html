@@ -15,7 +15,7 @@
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // ✅ YOUR ACTUAL FIREBASE PROJECT CONFIG
+    // ✅ YOUR FIREBASE PROJECT CONFIG
     const firebaseConfig = {
       apiKey: "AIzaSyC5mu2VsT483qfKCzYmWFDNhoPI4O_waK8",
       authDomain: "self-improvement-92ed0.firebaseapp.com",
@@ -55,14 +55,11 @@
 
     <!-- Auth Card -->
     <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-xl space-y-4">
-      
-      <!-- Tabs -->
       <div class="flex border-b border-gray-800 pb-2 text-sm font-bold">
         <button id="tabSignInBtn" class="flex-1 text-center py-1 text-emerald-400 border-b-2 border-emerald-400">Sign In</button>
         <button id="tabSignUpBtn" class="flex-1 text-center py-1 text-gray-500">Sign Up</button>
       </div>
 
-      <!-- Auth Form -->
       <form id="authForm" class="space-y-3">
         <div id="usernameContainer" class="hidden">
           <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1">Username</label>
@@ -82,7 +79,6 @@
         <button type="submit" id="authSubmitBtn" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 font-bold text-gray-950 rounded-xl transition text-sm">Sign In</button>
       </form>
 
-      <!-- Forgot Password & Google Sign-In -->
       <div class="space-y-3 pt-2">
         <button id="btnForgotPassword" class="text-xs text-gray-400 hover:text-emerald-400 text-center w-full">Forgot Password?</button>
         
@@ -139,7 +135,7 @@
         <span id="completedCount" class="text-xs font-semibold px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20">0/11 Done</span>
       </div>
 
-      <!-- Water Intake Tracker Block (Hydration) -->
+      <!-- Water Intake Tracker -->
       <div class="p-3.5 bg-gray-950 border border-gray-800 rounded-xl flex items-center justify-between">
         <div>
           <span class="text-sm font-semibold text-gray-200 block">Hydration Goal (3L) 💧</span>
@@ -151,7 +147,7 @@
         </div>
       </div>
 
-      <!-- Checkbox Rules -->
+      <!-- Checkboxes -->
       <form id="habitForm" class="space-y-2">
         <label id="lbl-wakeUp" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">Wake up at 6:00 AM ⏰</span>
@@ -196,7 +192,7 @@
       </form>
     </div>
 
-    <!-- 180 DAYS ULTRA-COMPACT PROGRESS MAP -->
+    <!-- 180 DAYS PROGRESS MAP -->
     <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg space-y-3">
       <div class="flex items-center justify-between">
         <div>
@@ -206,10 +202,8 @@
         <span id="protocolProgressCount" class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">0/180 Days</span>
       </div>
 
-      <!-- 180 Boxes Compact Grid (12 cols for clean layout) -->
       <div id="grid180" class="grid grid-cols-10 sm:grid-cols-12 gap-1 max-h-64 overflow-y-auto pr-1"></div>
 
-      <!-- Legend Indicator -->
       <div class="flex items-center justify-between text-[9px] text-gray-400 pt-2 border-t border-gray-800/60">
         <div class="flex items-center space-x-1">
           <span class="w-2 h-2 rounded-sm bg-gray-950 border border-gray-800"></span>
@@ -228,7 +222,6 @@
 
   </div>
 
-  <!-- App Script Logic -->
   <script type="module">
     const authSection = document.getElementById('authSection');
     const appSection = document.getElementById('appSection');
@@ -243,9 +236,8 @@
     let currentUser = null;
     let trackerData = {};
     const todayKey = new Date().toISOString().split('T')[0];
-    const totalHabitItems = 11; // 10 Checkboxes + 1 Water Goal
+    const totalHabitItems = 11;
 
-    // Auth State Toggle
     tabSignInBtn.addEventListener('click', () => {
       isSignUpState = false;
       tabSignInBtn.className = "flex-1 text-center py-1 text-emerald-400 border-b-2 border-emerald-400";
@@ -262,7 +254,6 @@
       authSubmitBtn.textContent = "Sign Up";
     });
 
-    // Firebase Auth Handlers
     setTimeout(() => {
       const { 
         createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, 
@@ -279,7 +270,6 @@
           document.getElementById('userEmailDisplay').textContent = user.email;
           document.getElementById('currentDateDisplay').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 
-          // Listen to Cloud Firestore Data Real-time
           const userDocRef = doc(window.db, "users", user.uid);
           onSnapshot(userDocRef, (docSnap) => {
             if (docSnap.exists()) {
@@ -300,7 +290,6 @@
         }
       });
 
-      // Submit Sign In / Sign Up
       authForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         authErrorMsg.classList.add('hidden');
@@ -324,7 +313,6 @@
         }
       });
 
-      // Google Sign-In
       document.getElementById('btnGoogleSignIn').addEventListener('click', async () => {
         try {
           await signInWithPopup(window.auth, window.googleProvider);
@@ -334,7 +322,6 @@
         }
       });
 
-      // Password Reset
       document.getElementById('btnForgotPassword').addEventListener('click', async () => {
         const email = document.getElementById('authEmail').value;
         if (!email) {
@@ -349,13 +336,11 @@
         }
       });
 
-      // Logout
       document.getElementById('btnLogout').addEventListener('click', () => {
         signOut(window.auth);
       });
     }, 1000);
 
-    // Dynamic UI Updates & Database Sync
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     checkboxes.forEach(cb => {
       cb.addEventListener('change', async (e) => {
@@ -365,7 +350,6 @@
       });
     });
 
-    // Water Tracker Buttons
     document.getElementById('btnAddWater').addEventListener('click', () => {
       if (!trackerData[todayKey]) trackerData[todayKey] = { water: 0 };
       const currentWater = trackerData[todayKey].water || 0;
@@ -387,7 +371,6 @@
     }
 
     function updateUI() {
-      // 1. Set Checkboxes State
       checkboxes.forEach(cb => {
         const isChecked = trackerData[todayKey] ? (trackerData[todayKey][cb.value] || false) : false;
         cb.checked = isChecked;
@@ -399,11 +382,9 @@
         }
       });
 
-      // 2. Set Water Progress
       const waterMl = trackerData[todayKey] ? (trackerData[todayKey].water || 0) : 0;
       document.getElementById('waterTextDisplay').textContent = `${waterMl} / 3000 ml`;
 
-      // 3. Calculate Today's Completion Score
       const currentDayData = trackerData[todayKey] || {};
       let completedCount = Object.keys(currentDayData).filter(k => k !== 'water' && currentDayData[k]).length;
       if (waterMl >= 3000) completedCount += 1;
@@ -413,7 +394,6 @@
       document.getElementById('completedCount').textContent = `${completedCount}/${totalHabitItems} Done`;
       document.getElementById('overallScore').textContent = `${todayPercentage}%`;
 
-      // 4. Calculate Streak Count (Days with 100% score)
       let streak = 0;
       let checkDate = new Date();
       while (true) {
@@ -435,7 +415,6 @@
       }
       document.getElementById('streakCount').textContent = `${streak} 🔥`;
 
-      // 5. Render 180 Days Compact Grid
       render180DaysGrid();
     }
 
@@ -444,13 +423,12 @@
       if (!gridContainer) return;
       gridContainer.innerHTML = '';
 
-      const startDate = new Date();
+      const today = new Date();
       let completedDaysTotal = 0;
 
       for (let i = 1; i <= 180; i++) {
-        // Calculate date offset relative to today or protocol start
-        const dateObj = new Date(startDate);
-        dateObj.setDate(startDate.getDate() - (180 - i)); 
+        const dateObj = new Date(today);
+        dateObj.setDate(today.getDate() + (i - 1)); 
         const dateStr = dateObj.toISOString().split('T')[0];
 
         const dayData = trackerData[dateStr];
@@ -464,6 +442,10 @@
         const box = document.createElement('div');
         box.className = 'aspect-square rounded-[3px] flex items-center justify-center text-[8px] font-semibold transition cursor-pointer select-none';
         box.title = `Day ${i} (${dateStr}): ${Math.round(score)}% completed`;
+
+        if (i === 1) {
+          box.classList.add('ring-2', 'ring-amber-500', 'ring-offset-1', 'ring-offset-gray-900');
+        }
 
         if (score === 100) {
           box.classList.add('bg-emerald-500', 'text-gray-950', 'shadow-sm', 'shadow-emerald-500/50');
