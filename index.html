@@ -151,63 +151,44 @@
         </div>
       </div>
 
-      <!-- Checkbox Rules (Ordered Daily Routine) -->
+      <!-- Checkbox Rules -->
       <form id="habitForm" class="space-y-2">
-        <!-- 1. Wake Up -->
         <label id="lbl-wakeUp" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">Wake up at 6:00 AM ⏰</span>
           <input type="checkbox" value="wakeUp" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
         </label>
-
-        <!-- 2. Daily Workout -->
         <label id="lbl-workout" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">Daily Workout / Gym 🏋️‍♂️</span>
           <input type="checkbox" value="workout" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
         </label>
-
-        <!-- 3. Cold Shower -->
         <label id="lbl-coldShower" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">Cold Shower 🧊</span>
           <input type="checkbox" value="coldShower" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
         </label>
-
-        <!-- 4. Day Planning -->
         <label id="lbl-dayPlanning" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">Day Planning 📋</span>
           <input type="checkbox" value="dayPlanning" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
         </label>
-
-        <!-- 5. Deep Work -->
         <label id="lbl-deepWork" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">Deep Work / Skill Building 📚</span>
           <input type="checkbox" value="deepWork" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
         </label>
-
-        <!-- 6. Reading -->
         <label id="lbl-reading" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">Reading / Learning 📖</span>
           <input type="checkbox" value="reading" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
         </label>
-
-        <!-- 7. Social Media Detox -->
         <label id="lbl-detox" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">Social Media Detox 🍃</span>
           <input type="checkbox" value="detox" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
         </label>
-
-        <!-- 8. No Adult Content -->
         <label id="lbl-noPorn" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">No Adult Content / Retention 🚫</span>
           <input type="checkbox" value="noPorn" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
         </label>
-
-        <!-- 9. No Smoking -->
         <label id="lbl-noSmoke" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">No Smoking / Nicotine 🚭</span>
           <input type="checkbox" value="noSmoke" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
         </label>
-
-        <!-- 10. No Alcohol -->
         <label id="lbl-noAlcohol" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">No Alcohol 🍷</span>
           <input type="checkbox" value="noAlcohol" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
@@ -215,15 +196,34 @@
       </form>
     </div>
 
-    <!-- Monthly Calendar View -->
-    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg">
-      <div class="flex items-center justify-between mb-3">
-        <h2 id="calendarMonthYear" class="text-sm font-bold text-gray-200">Month Overview</h2>
+    <!-- 180 DAYS ULTRA-COMPACT PROGRESS MAP -->
+    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg space-y-3">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-sm font-bold text-gray-200">180 Days Protocol Grid</h2>
+          <p class="text-[10px] text-gray-500">Each block represents 1 Day of Challenge</p>
+        </div>
+        <span id="protocolProgressCount" class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">0/180 Days</span>
       </div>
-      <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-gray-500 mb-2">
-        <div>SU</div><div>MO</div><div>TU</div><div>WE</div><div>TH</div><div>FR</div><div>SA</div>
+
+      <!-- 180 Boxes Compact Grid (12 cols for clean layout) -->
+      <div id="grid180" class="grid grid-cols-10 sm:grid-cols-12 gap-1 max-h-64 overflow-y-auto pr-1"></div>
+
+      <!-- Legend Indicator -->
+      <div class="flex items-center justify-between text-[9px] text-gray-400 pt-2 border-t border-gray-800/60">
+        <div class="flex items-center space-x-1">
+          <span class="w-2 h-2 rounded-sm bg-gray-950 border border-gray-800"></span>
+          <span>Pending</span>
+        </div>
+        <div class="flex items-center space-x-1">
+          <span class="w-2 h-2 rounded-sm bg-amber-500/40 border border-amber-500/60"></span>
+          <span>Partial</span>
+        </div>
+        <div class="flex items-center space-x-1">
+          <span class="w-2 h-2 rounded-sm bg-emerald-500 border border-emerald-400"></span>
+          <span>100% Completed</span>
+        </div>
       </div>
-      <div id="calendarGrid" class="grid grid-cols-7 gap-1 text-center text-xs font-semibold"></div>
     </div>
 
   </div>
@@ -435,31 +435,23 @@
       }
       document.getElementById('streakCount').textContent = `${streak} 🔥`;
 
-      // 5. Render Calendar View
-      renderCalendar();
+      // 5. Render 180 Days Compact Grid
+      render180DaysGrid();
     }
 
-    function renderCalendar() {
-      const calendarGrid = document.getElementById('calendarGrid');
-      if (!calendarGrid) return;
-      calendarGrid.innerHTML = '';
-      
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = today.getMonth();
-      document.getElementById('calendarMonthYear').textContent = today.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    function render180DaysGrid() {
+      const gridContainer = document.getElementById('grid180');
+      if (!gridContainer) return;
+      gridContainer.innerHTML = '';
 
-      const firstDay = new Date(year, month, 1).getDay();
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const startDate = new Date();
+      let completedDaysTotal = 0;
 
-      for (let i = 0; i < firstDay; i++) {
-        calendarGrid.appendChild(document.createElement('div'));
-      }
-
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        const cell = document.createElement('div');
-        cell.className = 'py-2 rounded-lg border text-center font-medium transition';
+      for (let i = 1; i <= 180; i++) {
+        // Calculate date offset relative to today or protocol start
+        const dateObj = new Date(startDate);
+        dateObj.setDate(startDate.getDate() - (180 - i)); 
+        const dateStr = dateObj.toISOString().split('T')[0];
 
         const dayData = trackerData[dateStr];
         let score = 0;
@@ -469,13 +461,24 @@
           score = (completed / totalHabitItems) * 100;
         }
 
-        if (score === 100) cell.classList.add('bg-emerald-500/20', 'border-emerald-500/50', 'text-emerald-300');
-        else if (score > 0) cell.classList.add('bg-amber-500/20', 'border-amber-500/50', 'text-amber-300');
-        else cell.classList.add('bg-gray-950', 'border-gray-800', 'text-gray-500');
+        const box = document.createElement('div');
+        box.className = 'aspect-square rounded-[3px] flex items-center justify-center text-[8px] font-semibold transition cursor-pointer select-none';
+        box.title = `Day ${i} (${dateStr}): ${Math.round(score)}% completed`;
 
-        cell.textContent = day;
-        calendarGrid.appendChild(cell);
+        if (score === 100) {
+          box.classList.add('bg-emerald-500', 'text-gray-950', 'shadow-sm', 'shadow-emerald-500/50');
+          completedDaysTotal++;
+        } else if (score > 0) {
+          box.classList.add('bg-amber-500/40', 'border', 'border-amber-500/60', 'text-amber-300');
+        } else {
+          box.classList.add('bg-gray-950', 'border', 'border-gray-800/80', 'text-gray-600');
+        }
+
+        box.textContent = i;
+        gridContainer.appendChild(box);
       }
+
+      document.getElementById('protocolProgressCount').textContent = `${completedDaysTotal}/180 Days`;
     }
   </script>
 </body>
