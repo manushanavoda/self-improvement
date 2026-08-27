@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>6-Month Transformation Protocol</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Mobile Touch Optimization */
+    body { -webkit-tap-highlight-color: transparent; }
+    .touch-target { min-height: 48px; }
+  </style>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen pb-10 font-sans antialiased selection:bg-emerald-500 selection:text-white">
+
+  <div class="max-w-md mx-auto px-4 pt-6 space-y-5">
+    
+    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg flex items-center justify-between">
+      <div>
+        <h1 class="text-xl font-black tracking-wide text-emerald-400">180-DAY PROTOCOL</h1>
+        <p id="currentDateDisplay" class="text-xs text-gray-400 mt-0.5 font-medium"></p>
+      </div>
+      <div class="text-right bg-gray-950 border border-gray-800 rounded-xl px-3 py-1.5">
+        <span class="text-[10px] uppercase tracking-wider text-gray-500 font-bold block">Score</span>
+        <div id="overallScore" class="text-2xl font-black text-emerald-400 leading-none">0%</div>
+      </div>
+    </div>
+
+    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base font-bold text-gray-200">Today's Discipline</h2>
+        <span id="completedCount" class="text-xs font-semibold px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20">0/6 Done</span>
+      </div>
+
+      <form id="habitForm" class="space-y-2.5">
+        
+        <label class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl active:bg-gray-800 transition cursor-pointer">
+          <span class="text-sm font-semibold text-gray-200">Wake up at 6:00 AM ⏰</span>
+          <input type="checkbox" value="wakeUp" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
+        </label>
+
+        <label class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl active:bg-gray-800 transition cursor-pointer">
+          <span class="text-sm font-semibold text-gray-200">Daily Workout / Fitness 🏋️‍♂️</span>
+          <input type="checkbox" value="workout" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
+        </label>
+
+        <label class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl active:bg-gray-800 transition cursor-pointer">
+          <span class="text-sm font-semibold text-gray-200">No Adult Content / Retention 🚫</span>
+          <input type="checkbox" value="noPorn" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
+        </label>
+
+        <label class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl active:bg-gray-800 transition cursor-pointer">
+          <span class="text-sm font-semibold text-gray-200">No Smoking / Nicotine 🚭</span>
+          <input type="checkbox" value="noSmoke" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
+        </label>
+
+        <label class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl active:bg-gray-800 transition cursor-pointer">
+          <span class="text-sm font-semibold text-gray-200">No Alcohol 📵</span>
+          <input type="checkbox" value="noAlcohol" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
+        </label>
+
+        <label class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl active:bg-gray-800 transition cursor-pointer">
+          <span class="text-sm font-semibold text-gray-200">Deep Work / Skill Building 📚</span>
+          <input type="checkbox" value="deepWork" class="w-6 h-6 accent-emerald-500 rounded-md cursor-pointer">
+        </label>
+
+      </form>
+    </div>
+
+    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg">
+      <h2 class="text-base font-bold text-gray-200 mb-1">7-Day Consistency Trend</h2>
+      <p class="text-xs text-gray-400 mb-3">Daily completion percentage graph.</p>
+      <div class="relative h-48 w-full">
+        <canvas id="consistencyChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const todayKey = new Date().toISOString().split('T')[0];
+    document.getElementById('currentDateDisplay').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+    let trackerData = JSON.parse(localStorage.getItem('transformationDataMobile')) || {};
+    if (!trackerData[todayKey]) {
+      trackerData[todayKey] = { wakeUp: false, workout: false, noPorn: false, noSmoke: false, noAlcohol: false, deepWork: false };
+    }
+
+    // Chart Setup Optimized for Mobile Screens
+    const ctx = document.getElementById('consistencyChart').getContext('2d');
+    const consistencyChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: Object.keys(trackerData).slice(-7),
+        datasets: [{
+          label: 'Completion %',
+          data: [],
+          borderColor: '#10b981',
+          borderWidth: 2,
+          pointBackgroundColor: '#10b981',
+          backgroundColor: 'rgba(16, 185, 129, 0.15)',
+          fill: true,
+          tension: 0.35
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { min: 0, max: 100, ticks: { color: '#6b7280', stepSize: 25 }, grid: { color: '#1f2937' } },
+          x: { ticks: { color: '#6b7280' }, grid: { display: false } }
+        },
+        plugins: { legend: { display: false } }
+      }
+    });
+
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+
+    checkboxes.forEach(cb => {
+      cb.checked = trackerData[todayKey][cb.value] || false;
+      cb.addEventListener('change', (e) => {
+        trackerData[todayKey][e.target.value] = e.target.checked;
+        localStorage.setItem('transformationDataMobile', JSON.stringify(trackerData));
+        updateAnalytics();
+      });
+    });
+
+    function updateAnalytics() {
+      const dates = Object.keys(trackerData);
+      let totalCompleted = 0;
+      let totalPossible = dates.length * 6;
+
+      dates.forEach(d => {
+        totalCompleted += Object.values(trackerData[d]).filter(Boolean).length;
+      });
+
+      const todayCompleted = Object.values(trackerData[todayKey]).filter(Boolean).length;
+      document.getElementById('completedCount').textContent = `${todayCompleted}/6 Done`;
+
+      const overallPercentage = Math.round((totalCompleted / totalPossible) * 100) || 0;
+      document.getElementById('overallScore').textContent = `${overallPercentage}%`;
+
+      consistencyChart.data.labels = dates.slice(-7).map(d => d.slice(5)); // Format MM-DD
+      consistencyChart.data.datasets[0].data = dates.slice(-7).map(date => {
+        const habits = trackerData[date];
+        const completed = Object.values(habits).filter(Boolean).length;
+        return Math.round((completed / 6) * 100);
+      });
+      consistencyChart.update();
+    }
+
+    updateAnalytics();
+  </script>
+</body>
+</html>
