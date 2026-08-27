@@ -3,32 +3,132 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>180-Day Transformation Protocol</title>
+  <title>180-Day Protocol | Firebase Cloud Tracker</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Firebase Modular SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, 
+      signOut, onAuthStateChanged, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup, updateProfile 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // ⚠️ REPLACE THIS WITH YOUR FIREBASE PROJECT CONFIG
+    const firebaseConfig = {
+      apiKey: "AIzaSyC5mu2VsT483qfKCzYmWFDNhoPI4O_waK8",
+      authDomain: "self-improvement-92ed0.firebaseapp.com",
+      projectId: "self-improvement-92ed0",
+      storageBucket: "self-improvement-92ed0.firebasestorage.app",
+      messagingSenderId: "660035879429",
+      appId: "1:660035879429:web:d4ea6953460eee6e03926c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const googleProvider = new GoogleAuthProvider();
+
+    window.auth = auth;
+    window.db = db;
+    window.googleProvider = googleProvider;
+    window.firebaseAuthOps = { 
+      createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, 
+      onAuthStateChanged, sendPasswordResetEmail, signInWithPopup, updateProfile,
+      doc, setDoc, getDoc, onSnapshot, updateDoc
+    };
+  </script>
   <style>
     body { -webkit-tap-highlight-color: transparent; }
     .touch-target { min-height: 48px; }
   </style>
 </head>
-<body class="bg-black text-gray-100 min-h-screen pb-12 font-sans antialiased selection:bg-emerald-500 selection:text-white">
+<body class="bg-black text-gray-100 min-h-screen pb-16 font-sans antialiased selection:bg-emerald-500 selection:text-white">
 
-  <div class="max-w-md mx-auto px-4 pt-6 space-y-4">
+  <!-- AUTH SECTION (Sign In / Sign Up / Password Reset) -->
+  <div id="authSection" class="max-w-md mx-auto px-4 pt-12 space-y-6">
+    <div class="text-center space-y-2">
+      <h1 class="text-2xl font-black text-emerald-400 tracking-wider">180-DAY PROTOCOL</h1>
+      <p class="text-xs text-gray-400">Cloud Sync & Multi-Device Discipline Engine</p>
+    </div>
+
+    <!-- Auth Card -->
+    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-xl space-y-4">
+      
+      <!-- Tabs -->
+      <div class="flex border-b border-gray-800 pb-2 text-sm font-bold">
+        <button id="tabSignInBtn" class="flex-1 text-center py-1 text-emerald-400 border-b-2 border-emerald-400">Sign In</button>
+        <button id="tabSignUpBtn" class="flex-1 text-center py-1 text-gray-500">Sign Up</button>
+      </div>
+
+      <!-- Auth Form -->
+      <form id="authForm" class="space-y-3">
+        <div id="usernameContainer" class="hidden">
+          <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1">Username</label>
+          <input type="text" id="authUsername" placeholder="John Doe" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500">
+        </div>
+
+        <div>
+          <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1">Email Address</label>
+          <input type="email" id="authEmail" required placeholder="user@example.com" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500">
+        </div>
+
+        <div>
+          <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1">Password</label>
+          <input type="password" id="authPassword" required placeholder="••••••••" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500">
+        </div>
+
+        <button type="submit" id="authSubmitBtn" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 font-bold text-gray-950 rounded-xl transition text-sm">Sign In</button>
+      </form>
+
+      <!-- Forgot Password & Google Sign-In -->
+      <div class="space-y-3 pt-2">
+        <button id="btnForgotPassword" class="text-xs text-gray-400 hover:text-emerald-400 text-center w-full">Forgot Password?</button>
+        
+        <div class="relative flex py-1 items-center">
+          <div class="flex-grow border-t border-gray-800"></div>
+          <span class="flex-shrink mx-3 text-[10px] text-gray-500 font-bold uppercase">OR</span>
+          <div class="flex-grow border-t border-gray-800"></div>
+        </div>
+
+        <button id="btnGoogleSignIn" class="w-full py-2.5 bg-gray-950 border border-gray-800 hover:bg-gray-800 font-semibold text-xs flex items-center justify-center space-x-2 rounded-xl transition">
+          <span>Continue with Google</span>
+        </button>
+      </div>
+
+      <p id="authErrorMsg" class="text-xs text-rose-500 text-center hidden"></p>
+    </div>
+  </div>
+
+  <!-- MAIN APP DASHBOARD (Protected View) -->
+  <div id="appSection" class="max-w-md mx-auto px-4 pt-6 space-y-4 hidden">
     
-    <!-- Header -->
+    <!-- User Profile Header -->
     <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg flex items-center justify-between">
       <div>
-        <h1 class="text-lg font-black tracking-wide text-emerald-400">180-DAY PROTOCOL</h1>
-        <p id="currentDateDisplay" class="text-xs text-gray-400 mt-0.5 font-medium"></p>
+        <span class="text-[10px] uppercase font-bold text-emerald-500 block">Logged In User</span>
+        <h2 id="userDisplayName" class="text-base font-black text-gray-100">User</h2>
+        <p id="userEmailDisplay" class="text-[10px] text-gray-400"></p>
+      </div>
+      <button id="btnLogout" class="px-3 py-1.5 bg-gray-950 border border-gray-800 hover:bg-rose-950 hover:text-rose-400 hover:border-rose-900/50 rounded-xl text-xs font-bold transition">Logout</button>
+    </div>
+
+    <!-- Protocol Stats Header -->
+    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg flex items-center justify-between">
+      <div>
+        <h1 class="text-base font-black tracking-wide text-emerald-400">180-DAY CHALLENGE</h1>
+        <p id="currentDateDisplay" class="text-xs text-gray-400 font-medium"></p>
       </div>
       <div class="flex items-center space-x-2">
         <div class="text-center bg-gray-950 border border-gray-800 rounded-xl px-2.5 py-1.5">
           <span class="text-[9px] uppercase text-gray-500 font-bold block">Streak</span>
-          <div id="streakCount" class="text-xl font-black text-orange-500 leading-none">0 🔥</div>
+          <div id="streakCount" class="text-lg font-black text-orange-500 leading-none">0 🔥</div>
         </div>
         <div class="text-center bg-gray-950 border border-gray-800 rounded-xl px-2.5 py-1.5">
           <span class="text-[9px] uppercase text-gray-500 font-bold block">Score</span>
-          <div id="overallScore" class="text-xl font-black text-emerald-400 leading-none">0%</div>
+          <div id="overallScore" class="text-lg font-black text-emerald-400 leading-none">0%</div>
         </div>
       </div>
     </div>
@@ -36,7 +136,7 @@
     <!-- Daily Checklist -->
     <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg">
       <div class="flex items-center justify-between mb-3">
-        <h2 class="text-sm font-bold text-gray-200">Today's Non-Negotiables</h2>
+        <h2 class="text-sm font-bold text-gray-200">Today's Protocol Rules</h2>
         <span id="completedCount" class="text-xs font-semibold px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20">0/6 Done</span>
       </div>
 
@@ -72,39 +172,11 @@
     <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg">
       <div class="flex items-center justify-between mb-3">
         <h2 id="calendarMonthYear" class="text-sm font-bold text-gray-200">Month Overview</h2>
-        <div class="flex items-center space-x-1">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
-          <span class="text-[10px] text-gray-400 mr-2">100%</span>
-          <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
-          <span class="text-[10px] text-gray-400">Partial</span>
-        </div>
       </div>
-      
-      <!-- Days of Week Header -->
       <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-gray-500 mb-2">
         <div>SU</div><div>MO</div><div>TU</div><div>WE</div><div>TH</div><div>FR</div><div>SA</div>
       </div>
-      
-      <!-- Calendar Dates Grid -->
       <div id="calendarGrid" class="grid grid-cols-7 gap-1 text-center text-xs font-semibold"></div>
-    </div>
-
-    <!-- Hydration & Journal -->
-    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg flex items-center justify-between">
-      <div>
-        <h3 class="text-sm font-bold text-gray-200">Hydration Tracker 💧</h3>
-        <p class="text-xs text-gray-400">Target: 3.5 Liters (7 Glasses)</p>
-      </div>
-      <div class="flex items-center space-x-3">
-        <button id="btnMinusWater" class="w-8 h-8 rounded-lg bg-gray-800 border border-gray-700 font-bold text-lg flex items-center justify-center active:bg-gray-700">-</button>
-        <span id="waterCountDisplay" class="text-base font-black text-cyan-400">0/7</span>
-        <button id="btnPlusWater" class="w-8 h-8 rounded-lg bg-gray-800 border border-gray-700 font-bold text-lg flex items-center justify-center active:bg-gray-700">+</button>
-      </div>
-    </div>
-
-    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg space-y-2">
-      <h3 class="text-sm font-bold text-gray-200">Daily Journal / Reflection 📝</h3>
-      <textarea id="journalInput" rows="2" placeholder="Write thoughts or main focus for today..." class="w-full bg-gray-950 border border-gray-800 rounded-xl p-2.5 text-xs text-gray-200 focus:outline-none focus:border-emerald-500/50 resize-none"></textarea>
     </div>
 
     <!-- 7-Day Trend Chart -->
@@ -117,189 +189,200 @@
 
   </div>
 
-  <script>
-    const today = new Date();
-    const todayKey = today.toISOString().split('T')[0];
-    document.getElementById('currentDateDisplay').textContent = today.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  <!-- App Script Logic -->
+  <script type="module">
+    const authSection = document.getElementById('authSection');
+    const appSection = document.getElementById('appSection');
+    const authForm = document.getElementById('authForm');
+    const tabSignInBtn = document.getElementById('tabSignInBtn');
+    const tabSignUpBtn = document.getElementById('tabSignUpBtn');
+    const usernameContainer = document.getElementById('usernameContainer');
+    const authSubmitBtn = document.getElementById('authSubmitBtn');
+    const authErrorMsg = document.getElementById('authErrorMsg');
 
-    let trackerData = JSON.parse(localStorage.getItem('transformationDataCalendar')) || {};
-    if (!trackerData[todayKey]) {
-      trackerData[todayKey] = { wakeUp: false, workout: false, noPorn: false, noSmoke: false, noAlcohol: false, deepWork: false, water: 0, journal: "" };
-    }
+    let isSignUpState = false;
+    let currentUser = null;
+    let trackerData = {};
+    const todayKey = new Date().toISOString().split('T')[0];
 
-    // Chart Setup
-    const ctx = document.getElementById('consistencyChart').getContext('2d');
-    const consistencyChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: [],
-        datasets: [{
-          label: 'Completion %',
-          data: [],
-          borderColor: '#10b981',
-          borderWidth: 2,
-          pointBackgroundColor: '#10b981',
-          backgroundColor: 'rgba(16, 185, 129, 0.12)',
-          fill: true,
-          tension: 0.3
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: { min: 0, max: 100, ticks: { color: '#6b7280', stepSize: 50 }, grid: { color: '#1f2937' } },
-          x: { ticks: { color: '#6b7280' }, grid: { display: false } }
-        },
-        plugins: { legend: { display: false } }
-      }
+    // Auth State Toggle
+    tabSignInBtn.addEventListener('click', () => {
+      isSignUpState = false;
+      tabSignInBtn.className = "flex-1 text-center py-1 text-emerald-400 border-b-2 border-emerald-400";
+      tabSignUpBtn.className = "flex-1 text-center py-1 text-gray-500";
+      usernameContainer.classList.add('hidden');
+      authSubmitBtn.textContent = "Sign In";
     });
 
+    tabSignUpBtn.addEventListener('click', () => {
+      isSignUpState = true;
+      tabSignUpBtn.className = "flex-1 text-center py-1 text-emerald-400 border-b-2 border-emerald-400";
+      tabSignInBtn.className = "flex-1 text-center py-1 text-gray-500";
+      usernameContainer.classList.remove('hidden');
+      authSubmitBtn.textContent = "Sign Up";
+    });
+
+    // Firebase Auth Handlers
+    setTimeout(() => {
+      const { 
+        createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, 
+        onAuthStateChanged, sendPasswordResetEmail, signInWithPopup, updateProfile,
+        doc, setDoc, onSnapshot
+      } = window.firebaseAuthOps;
+
+      onAuthStateChanged(window.auth, (user) => {
+        if (user) {
+          currentUser = user;
+          authSection.classList.add('hidden');
+          appSection.classList.remove('hidden');
+          document.getElementById('userDisplayName').textContent = user.displayName || user.email.split('@')[0];
+          document.getElementById('userEmailDisplay').textContent = user.email;
+
+          // Listen to Cloud Firestore Data Real-time
+          const userDocRef = doc(window.db, "users", user.uid);
+          onSnapshot(userDocRef, (docSnap) => {
+            if (docSnap.exists()) {
+              trackerData = docSnap.data().habits || {};
+            } else {
+              trackerData = {};
+            }
+            if (!trackerData[todayKey]) {
+              trackerData[todayKey] = { wakeUp: false, workout: false, noPorn: false, noSmoke: false, noAlcohol: false, deepWork: false };
+            }
+            updateUI();
+          });
+
+        } else {
+          currentUser = null;
+          appSection.classList.add('hidden');
+          authSection.classList.remove('hidden');
+        }
+      });
+
+      // Submit Sign In / Sign Up
+      authForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        authErrorMsg.classList.add('hidden');
+        const email = document.getElementById('authEmail').value;
+        const password = document.getElementById('authPassword').value;
+        const username = document.getElementById('authUsername').value;
+
+        try {
+          if (isSignUpState) {
+            const res = await createUserWithEmailAndPassword(window.auth, email, password);
+            if (username) {
+              await updateProfile(res.user, { displayName: username });
+            }
+            await setDoc(doc(window.db, "users", res.user.uid), { habits: {} });
+          } else {
+            await signInWithEmailAndPassword(window.auth, email, password);
+          }
+        } catch (err) {
+          authErrorMsg.textContent = err.message.replace("Firebase: ", "");
+          authErrorMsg.classList.remove('hidden');
+        }
+      });
+
+      // Google Sign-In
+      document.getElementById('btnGoogleSignIn').addEventListener('click', async () => {
+        try {
+          await signInWithPopup(window.auth, window.googleProvider);
+        } catch (err) {
+          authErrorMsg.textContent = err.message;
+          authErrorMsg.classList.remove('hidden');
+        }
+      });
+
+      // Password Reset
+      document.getElementById('btnForgotPassword').addEventListener('click', async () => {
+        const email = document.getElementById('authEmail').value;
+        if (!email) {
+          alert("Please enter your email address first!");
+          return;
+        }
+        try {
+          await sendPasswordResetEmail(window.auth, email);
+          alert("Password reset email sent!");
+        } catch (err) {
+          alert(err.message);
+        }
+      });
+
+      // Logout
+      document.getElementById('btnLogout').addEventListener('click', () => {
+        signOut(window.auth);
+      });
+    }, 1000);
+
+    // Dynamic UI Updates & Database Sync
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    const journalInput = document.getElementById('journalInput');
-
     checkboxes.forEach(cb => {
-      const isChecked = trackerData[todayKey][cb.value] || false;
-      cb.checked = isChecked;
-      updateLabelStyle(cb.value, isChecked);
-
-      cb.addEventListener('change', (e) => {
+      cb.addEventListener('change', async (e) => {
+        if (!trackerData[todayKey]) trackerData[todayKey] = {};
         trackerData[todayKey][e.target.value] = e.target.checked;
-        updateLabelStyle(e.target.value, e.target.checked);
-        saveAndUpdate();
+        
+        // Sync to Firestore Cloud
+        if (currentUser) {
+          const { doc, setDoc } = window.firebaseAuthOps;
+          await setDoc(doc(window.db, "users", currentUser.uid), { habits: trackerData }, { merge: true });
+        }
       });
     });
 
-    document.getElementById('btnPlusWater').addEventListener('click', () => {
-      if ((trackerData[todayKey].water || 0) < 7) {
-        trackerData[todayKey].water = (trackerData[todayKey].water || 0) + 1;
-        saveAndUpdate();
-      }
-    });
+    function updateUI() {
+      // Set Checkboxes State
+      checkboxes.forEach(cb => {
+        const isChecked = trackerData[todayKey] ? (trackerData[todayKey][cb.value] || false) : false;
+        cb.checked = isChecked;
+        const label = document.getElementById(`lbl-${cb.value}`);
+        if (isChecked) {
+          label.classList.add('border-emerald-500/40', 'bg-emerald-950/20');
+        } else {
+          label.classList.remove('border-emerald-500/40', 'bg-emerald-950/20');
+        }
+      });
 
-    document.getElementById('btnMinusWater').addEventListener('click', () => {
-      if ((trackerData[todayKey].water || 0) > 0) {
-        trackerData[todayKey].water -= 1;
-        saveAndUpdate();
-      }
-    });
-
-    journalInput.value = trackerData[todayKey].journal || "";
-    journalInput.addEventListener('input', (e) => {
-      trackerData[todayKey].journal = e.target.value;
-      localStorage.setItem('transformationDataCalendar', JSON.stringify(trackerData));
-    });
-
-    function updateLabelStyle(key, isChecked) {
-      const parentLabel = document.getElementById(`lbl-${key}`);
-      if (isChecked) {
-        parentLabel.classList.add('border-emerald-500/40', 'bg-emerald-950/20');
-        parentLabel.classList.remove('border-gray-800', 'bg-gray-950');
-      } else {
-        parentLabel.classList.remove('border-emerald-500/40', 'bg-emerald-950/20');
-        parentLabel.classList.add('border-gray-800', 'bg-gray-950');
-      }
+      // Render Calendar & Progress
+      renderCalendar();
     }
 
     function renderCalendar() {
       const calendarGrid = document.getElementById('calendarGrid');
+      if (!calendarGrid) return;
       calendarGrid.innerHTML = '';
-
+      
+      const today = new Date();
       const year = today.getFullYear();
       const month = today.getMonth();
-      
       document.getElementById('calendarMonthYear').textContent = today.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
       const firstDay = new Date(year, month, 1).getDay();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-      // Empty slots before 1st day of month
       for (let i = 0; i < firstDay; i++) {
-        const emptyCell = document.createElement('div');
-        emptyCell.className = 'py-2';
-        calendarGrid.appendChild(emptyCell);
+        calendarGrid.appendChild(document.createElement('div'));
       }
 
-      // Render calendar days
       for (let day = 1; day <= daysInMonth; day++) {
-        const monthFormatted = String(month + 1).padStart(2, '0');
-        const dayFormatted = String(day).padStart(2, '0');
-        const dateStr = `${year}-${monthFormatted}-${dayFormatted}`;
-
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         const cell = document.createElement('div');
         cell.className = 'py-2 rounded-lg border text-center font-medium transition';
 
         const dayData = trackerData[dateStr];
         let score = 0;
         if (dayData) {
-          const completed = Object.keys(dayData).filter(k => ['wakeUp','workout','noPorn','noSmoke','noAlcohol','deepWork'].includes(k) && dayData[k]).length;
+          const completed = Object.keys(dayData).filter(k => dayData[k]).length;
           score = (completed / 6) * 100;
         }
 
-        if (dateStr === todayKey) {
-          cell.classList.add('ring-2', 'ring-emerald-400', 'font-bold');
-        }
-
-        if (score === 100) {
-          cell.classList.add('bg-emerald-500/20', 'border-emerald-500/50', 'text-emerald-300');
-        } else if (score > 0) {
-          cell.classList.add('bg-amber-500/20', 'border-amber-500/50', 'text-amber-300');
-        } else {
-          cell.classList.add('bg-gray-950', 'border-gray-800', 'text-gray-500');
-        }
+        if (score === 100) cell.classList.add('bg-emerald-500/20', 'border-emerald-500/50', 'text-emerald-300');
+        else if (score > 0) cell.classList.add('bg-amber-500/20', 'border-amber-500/50', 'text-amber-300');
+        else cell.classList.add('bg-gray-950', 'border-gray-800', 'text-gray-500');
 
         cell.textContent = day;
         calendarGrid.appendChild(cell);
       }
     }
-
-    function calculateStreak() {
-      const dates = Object.keys(trackerData).sort();
-      let streak = 0;
-      for (let i = dates.length - 1; i >= 0; i--) {
-        const d = dates[i];
-        const habits = trackerData[d];
-        const completed = Object.keys(habits).filter(k => ['wakeUp','workout','noPorn','noSmoke','noAlcohol','deepWork'].includes(k) && habits[k]).length;
-        if (completed === 6) {
-          streak++;
-        } else if (d !== todayKey) {
-          break;
-        }
-      }
-      return streak;
-    }
-
-    function saveAndUpdate() {
-      localStorage.setItem('transformationDataCalendar', JSON.stringify(trackerData));
-      
-      const dates = Object.keys(trackerData);
-      let totalCompleted = 0;
-      let totalPossible = dates.length * 6;
-
-      dates.forEach(d => {
-        totalCompleted += Object.keys(trackerData[d]).filter(k => ['wakeUp','workout','noPorn','noSmoke','noAlcohol','deepWork'].includes(k) && trackerData[d][k]).length;
-      });
-
-      const todayCompleted = Object.keys(trackerData[todayKey]).filter(k => ['wakeUp','workout','noPorn','noSmoke','noAlcohol','deepWork'].includes(k) && trackerData[todayKey][k]).length;
-      document.getElementById('completedCount').textContent = `${todayCompleted}/6 Done`;
-      document.getElementById('waterCountDisplay').textContent = `${trackerData[todayKey].water || 0}/7`;
-      document.getElementById('streakCount').textContent = `${calculateStreak()} 🔥`;
-
-      const overallPercentage = Math.round((totalCompleted / totalPossible) * 100) || 0;
-      document.getElementById('overallScore').textContent = `${overallPercentage}%`;
-
-      consistencyChart.data.labels = dates.slice(-7).map(d => d.slice(5));
-      consistencyChart.data.datasets[0].data = dates.slice(-7).map(date => {
-        const habits = trackerData[date];
-        const completed = Object.keys(habits).filter(k => ['wakeUp','workout','noPorn','noSmoke','noAlcohol','deepWork'].includes(k) && habits[k]).length;
-        return Math.round((completed / 6) * 100);
-      });
-      consistencyChart.update();
-
-      renderCalendar();
-    }
-
-    saveAndUpdate();
   </script>
 </body>
 </html>
