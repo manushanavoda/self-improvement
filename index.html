@@ -15,7 +15,6 @@
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // ✅ YOUR FIREBASE PROJECT CONFIG
     const firebaseConfig = {
       apiKey: "AIzaSyC5mu2VsT483qfKCzYmWFDNhoPI4O_waK8",
       authDomain: "self-improvement-92ed0.firebaseapp.com",
@@ -100,21 +99,21 @@
   <!-- MAIN APP DASHBOARD -->
   <div id="appSection" class="max-w-md mx-auto px-4 pt-6 space-y-4 hidden">
     
-    <!-- User Profile Header -->
+    <!-- User Profile Header (Updated with Welcome) -->
     <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg flex items-center justify-between">
       <div>
-        <span class="text-[10px] uppercase font-bold text-emerald-500 block">Logged In User</span>
-        <h2 id="userDisplayName" class="text-base font-black text-gray-100">User</h2>
+        <span class="text-[10px] uppercase font-bold text-emerald-500 block tracking-wider">LOGGED IN USER</span>
+        <h2 id="userDisplayName" class="text-base font-black text-gray-100">Welcome, User</h2>
         <p id="userEmailDisplay" class="text-[10px] text-gray-400"></p>
       </div>
       <button id="btnLogout" class="px-3 py-1.5 bg-gray-950 border border-gray-800 hover:bg-rose-950 hover:text-rose-400 hover:border-rose-900/50 rounded-xl text-xs font-bold transition">Logout</button>
     </div>
 
-    <!-- Protocol Stats Header -->
+    <!-- Protocol Stats Header (Updated with Day X of 180) -->
     <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-lg flex items-center justify-between">
       <div>
         <h1 class="text-base font-black tracking-wide text-emerald-400">180-DAY CHALLENGE</h1>
-        <p id="currentDateDisplay" class="text-xs text-gray-400 font-medium"></p>
+        <p id="currentDateDisplay" class="text-xs text-emerald-400 font-bold mt-0.5">Day 1 of 180</p>
       </div>
       <div class="flex items-center space-x-2">
         <div class="text-center bg-gray-950 border border-gray-800 rounded-xl px-2.5 py-1.5">
@@ -135,7 +134,7 @@
         <span id="completedCount" class="text-xs font-semibold px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20">0/11 Done</span>
       </div>
 
-      <!-- Water Intake Tracker -->
+      <!-- Water Tracker -->
       <div class="p-3.5 bg-gray-950 border border-gray-800 rounded-xl flex items-center justify-between">
         <div>
           <span class="text-sm font-semibold text-gray-200 block">Hydration Goal (3L) 💧</span>
@@ -147,7 +146,7 @@
         </div>
       </div>
 
-      <!-- Checkboxes -->
+      <!-- Habit Items -->
       <form id="habitForm" class="space-y-2">
         <label id="lbl-wakeUp" class="touch-target flex items-center justify-between px-3.5 py-2.5 bg-gray-950 border border-gray-800 rounded-xl transition cursor-pointer">
           <span class="text-sm font-semibold text-gray-200">Wake up at 6:00 AM ⏰</span>
@@ -266,9 +265,11 @@
           currentUser = user;
           authSection.classList.add('hidden');
           appSection.classList.remove('hidden');
-          document.getElementById('userDisplayName').textContent = user.displayName || user.email.split('@')[0];
+
+          // Welcome Message Fix
+          const name = user.displayName || user.email.split('@')[0];
+          document.getElementById('userDisplayName').textContent = `Welcome, ${name}`;
           document.getElementById('userEmailDisplay').textContent = user.email;
-          document.getElementById('currentDateDisplay').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 
           const userDocRef = doc(window.db, "users", user.uid);
           onSnapshot(userDocRef, (docSnap) => {
@@ -414,6 +415,11 @@
         }
       }
       document.getElementById('streakCount').textContent = `${streak} 🔥`;
+
+      // Day of 180 Calculation Fix
+      const loggedDaysCount = Object.keys(trackerData).length || 1;
+      const formattedDate = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      document.getElementById('currentDateDisplay').textContent = `Day ${loggedDaysCount} of 180 (${formattedDate})`;
 
       render180DaysGrid();
     }
